@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Graph</title>
+    <script src="https://d3js.org/d3.v5.min.js"></script>
+    <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" type="text/javascript"></script>
+    <style>
+        rect {
+            fill: yellow;
+            stroke: silver;
+            width: 80px;
+            height: 40px;
+            stroke-width: 2;
+        }
+        
+        path {
+            fill: none;
+            stroke: silver;
+            stroke-width: 2;
+        }
+        
+        text {
+            text-anchor: middle;
+        }
+    </style>
+</head>
+
+<body>
+    <script>
+        var svg = d3.select("body").append("svg")
+            .attr("width", 900).attr("height", 600)
+            .append("g").attr("transform", "translate(50,50)");
+
+        var data = [{
+            "child": "John",
+            "parent": ""
+        }, {
+            "child": "Aaron",
+            "parent": "Kelvin"
+        }, {
+            "child": "Kelvin",
+            "parent": "John"
+        }, {
+            "child": "Hannah",
+            "parent": "Anne"
+        }, {
+            "child": "Rose",
+            "parent": "Sarah"
+        }, {
+            "child": "Anne",
+            "parent": "John"
+        }, {
+            "child": "Sarah",
+            "parent": "Kelvin"
+        }, {
+            "child": "Mark",
+            "parent": "Anne"
+        }, {
+            "child": "Angel",
+            "parent": "Sarah"
+        }, {
+            "child": "Tom",
+            "parent": "Hannah"
+        }, {
+            "child": "Keith",
+            "parent": "John"
+        }];
+        var dataStructure = d3.stratify()
+            .id(function(d) {
+                return d.child;
+            })
+            .parentId(function(d) {
+                return d.parent;
+            })
+            (data);
+
+        var treeStructure = d3.tree().size([650, 300]);
+        var information = treeStructure(dataStructure);
+        console.log(information.descendants());
+        var connections = svg.append("g").selectAll("path").data(information.links());
+        connections.enter().append("path")
+            .attr("d", function(d) {
+                return "M" + d.source.x + "," + d.source.y + "v 40 H" +
+                    d.target.x + " V" + d.target.y;
+
+            });
+
+        var rectangles = svg.append("g").selectAll("rect").data(information.descendants());
+        rectangles.enter().append("rect")
+            .attr("x", function(d) {
+                return d.x - 40;
+            })
+            .attr("y", function(d) {
+                return d.y - 20;
+            })
+            .attr('width', '80px')
+            .attr('height', '40px')
+            .style(
+                'fill', 'white'
+            );
+
+        var names = svg.append("g").selectAll("text")
+            .data(information.descendants());
+        names.enter().append("text")
+            .text(function(d) {
+                return d.data.child;
+            })
+            .attr("x", function(d) {
+                return d.x;
+            })
+            .attr("y", function(d) {
+                return d.y;
+            })
+    </script>
+</body>
+
+</html>
